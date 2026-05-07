@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="笔记">
+      <UniqueIdentifier>{ac6926fd-6c06-46a7-86fa-11fc05d01512}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,5 +24,42 @@
     <ClCompile Include="glad\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader.md">
+      <Filter>笔记</Filter>
+    </None>
+    <None Include="vertexshadersource.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="fragmentshadersource.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="Mesh.md">
+      <Filter>笔记</Filter>
+    </None>
+    <None Include="Texture.md">
+      <Filter>笔记</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -137,6 +137,21 @@
   <ItemGroup>
     <ClCompile Include="glad\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shader.h" />
+    <ClCompile Include="Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragmentshadersource.glsl" />
+    <None Include="Mesh.md" />
+    <None Include="shader.md" />
+    <None Include="Texture.md" />
+    <None Include="vertexshadersource.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
