@@ -36,6 +36,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.md">
@@ -53,12 +56,19 @@
     <None Include="Texture.md">
       <Filter>笔记</Filter>
     </None>
+    <None Include="packages.config" />
+    <None Include="Model.md">
+      <Filter>笔记</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

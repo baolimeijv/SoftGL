@@ -4,11 +4,15 @@
 #include"shader.h"
 #include"Mesh.h"
 #include"Texture.h"
+#include"Model.h"
+
 #include <vector>
 
 //这个比较特殊通过宏实现
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include <assimp/Importer.hpp>
 
 // 窗口大小
 const unsigned int SCR_WIDTH = 800;
@@ -25,8 +29,8 @@ glm::vec3 lightPos(1.0f, 1.0f, 1.0f);
 // 鼠标参数
 float yaw = -90.0f;
 float pitch = 0.0f;
-float lastX = 400.0f;
-float lastY = 300.0f;
+float lastX = 200.0f;
+float lastY = 150.0f;
 bool firstMouse = true;
 
 // 移动参数
@@ -34,37 +38,6 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float cameraSpeed = 5.0f;
 
-// NEW: 生成棋盘格纹理
-GLuint generateCheckerboardTexture()
-{
-    const int texWidth = 512, texHeight = 512;
-    std::vector<unsigned char> data(texWidth * texHeight * 3);
-    const int squareSize = 64;
-    for (int y = 0; y < texHeight; ++y)
-    {
-        for (int x = 0; x < texWidth; ++x)
-        {
-            int ix = (x / squareSize) % 2;
-            int iy = (y / squareSize) % 2;
-            bool white = (ix == iy);
-            unsigned char val = white ? 255 : 64;
-            int idx = (y * texWidth + x) * 3;
-            data[idx] = val;
-            data[idx + 1] = val;
-            data[idx + 2] = val;
-        }
-    }
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texWidth, texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    return textureID;
-}
 
 // 鼠标回调
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -183,6 +156,8 @@ int main()
     shader ourShader("vertexshadersource.glsl","fragmentshadersource.glsl");
 
     Texture ourTex("test.png");
+
+    Model ourModel("bunny_10k.obj");
     
     ourShader.use();
     ourShader.setInt("texture1", 0);
@@ -215,7 +190,9 @@ int main()
 
         ourTex.bind(0);
 
-        mesh.draw();
+        //mesh.draw();
+
+        ourModel.Draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
