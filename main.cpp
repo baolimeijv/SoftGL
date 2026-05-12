@@ -1,14 +1,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include"shader.h"
-#include"Mesh.h"
-#include"Texture.h"
-#include"Model.h"
+#include "shader.h"
+#include "Mesh.h"
+#include "Texture.h"
+#include "Model.h"
 
 #include <vector>
 
-//这个比较特殊通过宏实现
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -37,9 +36,11 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float cameraSpeed = 5.0f;
+float lightSpeed = 0.1f;
 
+float Angle = 0.0f;
+float rotSpeed = 0.5f;
 
-// 鼠标回调
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -66,7 +67,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     cameraFront = glm::normalize(front);
 }
 
-// 键盘处理
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -84,6 +84,20 @@ void processInput(GLFWwindow* window)
         cameraPos += cameraUp * velocity;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         cameraPos -= cameraUp * velocity;
+    //移动光照
+    float lightSpeed = 3.0f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        lightPos.x -= lightSpeed;
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        lightPos.x += lightSpeed;
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        lightPos.z += lightSpeed;
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        lightPos.z -= lightSpeed;
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        lightPos.y += lightSpeed;
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        lightPos.y -= lightSpeed;
 }
 
 int main()
@@ -153,14 +167,67 @@ int main()
     Mesh mesh;
     mesh.BindBuffer(vertices, indices);
 
-    shader ourShader("vertexshadersource.glsl","fragmentshadersource.glsl");
+    std::vector<glm::mat4>model;
+    for(int i=0;i<2;i++)
+        model.push_back(glm::mat4(1.0f));
+    model[1] = glm::translate(model[1], glm::vec3(3.0, 0,0));
 
-    Texture ourTex("test.png");
+    shader ourShader("vertexshadersource.glsl", "fragmentshadersource.glsl");
+
+    Texture ourTex("TextureSrouce/RoadLines020B.png");
+    Texture normalTex("TextureSrouce/RoadLines020B_1K-PNG_NormalGL.png");
 
     Model ourModel("bunny_10k.obj");
-    
+
+    //不能复用上面数据因为已经释放了，立方体模拟灯光位置
+    std::vector<float> lightBoxVertices = {
+        // 前面
+        -0.1f, -0.1f,  0.1f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+         0.1f, -0.1f,  0.1f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+         0.1f,  0.1f,  0.1f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+        -0.1f,  0.1f,  0.1f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        // 后面
+        -0.1f, -0.1f, -0.1f,  0.0f, 0.0f,-1.0f,  1.0f, 0.0f,
+         0.1f, -0.1f, -0.1f,  0.0f, 0.0f,-1.0f,  0.0f, 0.0f,
+         0.1f,  0.1f, -0.1f,  0.0f, 0.0f,-1.0f,  0.0f, 1.0f,
+        -0.1f,  0.1f, -0.1f,  0.0f, 0.0f,-1.0f,  1.0f, 1.0f,
+        // 上面
+        -0.1f,  0.1f,  0.1f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+         0.1f,  0.1f,  0.1f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+         0.1f,  0.1f, -0.1f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+        -0.1f,  0.1f, -0.1f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        // 下面
+        -0.1f, -0.1f,  0.1f,  0.0f,-1.0f, 0.0f,  0.0f, 1.0f,
+         0.1f, -0.1f,  0.1f,  0.0f,-1.0f, 0.0f,  1.0f, 1.0f,
+         0.1f, -0.1f, -0.1f,  0.0f,-1.0f, 0.0f,  1.0f, 0.0f,
+        -0.1f, -0.1f, -0.1f,  0.0f,-1.0f, 0.0f,  0.0f, 0.0f,
+        // 右面
+         0.1f, -0.1f,  0.1f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+         0.1f, -0.1f, -0.1f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+         0.1f,  0.1f, -0.1f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+         0.1f,  0.1f,  0.1f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+         // 左面
+         -0.1f, -0.1f,  0.1f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+         -0.1f, -0.1f, -0.1f, -1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+         -0.1f,  0.1f, -0.1f, -1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+         -0.1f,  0.1f,  0.1f, -1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+    };
+
+    std::vector<unsigned int> lightBoxIndices = {
+        0,1,2, 0,2,3,
+        4,6,5, 4,7,6,
+        8,9,10, 8,10,11,
+        12,14,13, 12,15,14,
+        16,17,18, 16,18,19,
+        20,22,21, 20,23,22
+    };
+
+    Mesh lightBoxMesh;
+    lightBoxMesh.BindBuffer(lightBoxVertices, lightBoxIndices);
+
     ourShader.use();
     ourShader.setInt("texture1", 0);
+    ourShader.setInt("normalMap", 1);
 
     // 渲染循环
     while (!glfwWindowShouldClose(window))
@@ -175,24 +242,41 @@ int main()
 
         ourShader.use();
 
+        Angle = rotSpeed * deltaTime;
+
         // 变换矩阵
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        model[0] = glm::rotate(model[0], Angle, glm::vec3(0.5f, 1.0f, 0.0f));
+        model[1] = glm::rotate(model[1], Angle, glm::vec3(0.5f, 1.0f, 0.0f));
+        
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-        ourShader.setMat4("model", model);
+        ourShader.setMat4("model", model[0]);
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
         ourShader.setVec3("lightPos", lightPos);
         ourShader.setVec3("viewPos", cameraPos);
         ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
+        ourShader.setBool("useTexture", true);
         ourTex.bind(0);
+        normalTex.bind(1);
+        mesh.draw();
 
-        //mesh.draw();
+        ourShader.setMat4("model",model[1]);
+        ourShader.setBool("useTexture", false);
+        ourModel.Draw(ourShader);   // 此处会自动设置 modelColor
 
-        ourModel.Draw();
+        // 绘制光源指示器
+        ourShader.setBool("useTexture", false);
+        ourShader.setVec3("modelColor", glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glm::mat4 lightModel = glm::mat4(1.0f);
+        lightModel = glm::translate(lightModel, lightPos);
+        lightModel = glm::scale(lightModel, glm::vec3(0.4f));
+        ourShader.setMat4("model", lightModel);
+
+        lightBoxMesh.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

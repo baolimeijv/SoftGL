@@ -7,15 +7,15 @@
 #include <vector>
 #include <string>
 
-class Mesh;   // 前向声明，避免循环包含
+class Mesh;   // 前向声明
+class shader; // 前向声明
 
 class Model {
 public:
     Model(const char* path);
-    void Draw();
+    void Draw(shader& shader);
 
 private:
-    // 改用智能指针持有 Mesh，彻底避免拷贝和移动语义的问题
     std::vector<std::unique_ptr<Mesh>> meshes;
     std::string directory;
 
